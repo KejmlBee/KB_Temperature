@@ -1,8 +1,10 @@
 ## Overview
 
-Arduino library, for all architectures, to reading analog inputs and correct convertation to temperature in Kelvin or Celsius.<br>
+Arduino library, for all architectures, to reading analog inputs and correct convertation to temperature in Celsius.<br>
 
-Support thermocoupler PT1000 and NTC10K.<br>
+Support thermocoupler PT1000 and NTC10K for max 12-bit ADC.<br>
+
+This function scan analog input, convert value to Celsius, get 5 samples and do averange value from this.<br>
 
 ## Example
 
@@ -54,13 +56,15 @@ void loop()
 	
 	Serial.print("NTC10K temperature: ");
 	Serial.print(tempXY_temperature);
-	Serial.println(" °C");
+	lcd.write(0xdf);
+	Serial.println("C");
 	
 	tempAB.PT1000(tempAB_temperature);
 	
 	Serial.print("PT1000 temperature: ");
 	Serial.print(tempAB_temperature);
-	Serial.println(" °C");
+	lcd.write(0xdf);
+	Serial.println("C");
 }
 ```
 

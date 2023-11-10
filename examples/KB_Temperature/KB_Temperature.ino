@@ -19,10 +19,12 @@ void loop()
 	tempXY.NTC10K(tempXY_temperature);
 	Serial.print("NTC10K temperature: ");
 	Serial.print(tempXY_temperature);
-	Serial.println(" °C");
+	lcd.write(0xdf);
+	Serial.println("C");
 	
 	tempAB.PT1000(tempAB_temperature);
 	Serial.print("PT1000 temperature: ");
 	Serial.print(tempAB_temperature);
-	Serial.println(" °C");
+	lcd.write(0xdf);
+	Serial.println("C");
 }

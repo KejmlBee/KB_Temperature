@@ -1,7 +1,10 @@
 #include "KB_Temperature.h"
 
 
-const float ADC_LUT[4096] PROGMEM = 				// analogově digitální převodní tabulka pro analogový vstup 3.3V 12 bit
+#define NUM_SAMPLES 5
+
+
+const float ADC_LUT[4096] PROGMEM =
 { 0,
 7.4000,17.0000,18.8000,20.8000,22.8000,24.8000,26.6000,28.6000,30.4000,32.2000,33.6000,34.8000,36.0000,37.2000,38.6000,
 39.8000,41.0000,42.2000,43.8000,44.8000,46.0000,47.2000,48.6000,49.6000,50.6000,51.6000,52.4000,53.4000,54.4000,55.4000,
@@ -279,6 +282,12 @@ const float ADC_LUT[4096] PROGMEM = 				// analogově digitální převodní tab
 };
 
 
+float voltageAnalog;
+float inputAnalog;
+int temperatureSample[NUM_SAMPLES];
+float temperatureAverage;
+
+
 TemperatureNTC10K::TemperatureNTC10K(uint8_t analog_pin, uint16_t NTC_RES, uint16_t EXT_RES, uint16_t BETA_COEF, float NOM_TEMP, uint16_t ADC_MAX, float IN_VOLTAGE)
 {
 	_analog_pin = analog_pin;
@@ -299,18 +308,29 @@ void TemperatureNTC10K::begin()
 
 float TemperatureNTC10K::NTC10K(float ntc10kTemperature)
 {
-	float voltageAnalog_2 = 0;											// proměnná - napětí analogu
-	float inputAnalog_2 = 0;											// proměnná - vstupní data na analog
-	float Rt = 0;														// 
-	float ntcTempKelvin = 0; 											// proměnná - výsledná teplota v Kelvinech
-	inputAnalog_2 = analogRead(_analog_pin);							// přečíst data ze senzoru
-	inputAnalog_2 = ADC_LUT[(int)inputAnalog_2];						// převést hodnutu z tabulky
-	voltageAnalog_2 = inputAnalog_2 * _IN_VOLTAGE/_ADC_MAX;				// vypočítat hodnotu napětí analogu
-	Rt = _EXT_RES * voltageAnalog_2 / (_IN_VOLTAGE - voltageAnalog_2);	// 
-	ntcTempKelvin = 1/(1/_NOM_TEMP + log(Rt/_NTC_RES)/_BETA_COEF);			// výsledná teplota v Kelvinech
-	ntc10kTemperature = ntcTempKelvin - 273.15;							// výsledná teplota ve stupních Celsia
+	float Rt = 0;
+	float ntcTempKelvin = 0;
 	
-	return ntc10kTemperature;
+	for (uint8_t i = 0; i < NUM_SAMPLES; i++)
+	{
+		inputAnalog = analogRead(_analog_pin);
+		inputAnalog = ADC_LUT[(int)inputAnalog];
+		voltageAnalog = inputAnalog * _IN_VOLTAGE/_ADC_MAX;
+		Rt = (_EXT_RES * voltageAnalog) / (_IN_VOLTAGE - voltageAnalog);
+		ntcTempKelvin = 1/(1/_NOM_TEMP + log(Rt/_NTC_RES)/_BETA_COEF);
+		ntc10kTemperature = ntcTempKelvin - 273.15;
+		
+		temperatureSample[i] = ntc10kTemperature;
+	}
+	
+	temperatureAverage = 0;
+	for (uint8_t i=0; i< NUM_SAMPLES; i++) 
+	{
+		temperatureAverage += temperatureSample[i];
+	}
+	temperatureAverage /= NUM_SAMPLES;
+	
+	return temperatureAverage;
 }
 
 
@@ -332,12 +352,22 @@ void TemperaturePT1000::begin()
 
 float TemperaturePT1000::PT1000(float pt1000Temperature)
 {
-	float voltageAnalog_1 = 0;														// proměnná - napětí analogu	
-	float inputAnalog_1 = 0;														// proměnná - vstupní data na analog
-	inputAnalog_1 = analogRead(_analog_pin);										// přečíst data ze senzoru
-	inputAnalog_1 = ADC_LUT[(int)inputAnalog_1];									// převést hodnutu z tabulky
-	voltageAnalog_1 = inputAnalog_1 * _IN_VOLTAGE/_ADC_MAX;							// vypočítat hodnotu napětí analogu
-	pt1000Temperature = (((voltageAnalog_1 * 100) / _VT_FACTOR) + _PT1000_OFFSET);	// vypočítat teplotu PT1000
+	for (uint8_t i = 0; i < NUM_SAMPLES; i++)
+	{
+		inputAnalog = analogRead(_analog_pin);
+		inputAnalog = ADC_LUT[(int)inputAnalog];
+		voltageAnalog = inputAnalog * _IN_VOLTAGE/_ADC_MAX;
+		pt1000Temperature = (((voltageAnalog * 100) / _VT_FACTOR) + _PT1000_OFFSET);
+		
+		temperatureSample[i] = pt1000Temperature;
+	}
 	
-	return pt1000Temperature;
+	temperatureAverage = 0;
+	for (uint8_t i=0; i< NUM_SAMPLES; i++) 
+	{
+		temperatureAverage += temperatureSample[i];
+	}
+	temperatureAverage /= NUM_SAMPLES;
+	
+	return temperatureAverage;
 }
