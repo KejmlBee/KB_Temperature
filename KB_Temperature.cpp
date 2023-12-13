@@ -286,7 +286,9 @@ float voltageAnalog;
 float inputAnalog;
 int temperatureSample[NUM_SAMPLES];
 float temperatureAverage;
-
+int maxVal;
+int minVal;
+	
 
 TemperatureNTC10K::TemperatureNTC10K(uint8_t analog_pin, uint16_t NTC_RES, uint16_t EXT_RES, uint16_t BETA_COEF, float NOM_TEMP, uint16_t ADC_MAX, float IN_VOLTAGE, float NTC10K_OFFSET)
 {
@@ -311,6 +313,8 @@ float TemperatureNTC10K::NTC10K(float ntc10kTemperature)
 {
 	float Rt = 0;
 	float ntcTempKelvin = 0;
+	maxVal = 0;
+	minVal = 32767;
 	
 	for (uint8_t i = 0; i < NUM_SAMPLES; i++)
 	{
@@ -329,8 +333,12 @@ float TemperatureNTC10K::NTC10K(float ntc10kTemperature)
 	for (uint8_t i = 0; i < NUM_SAMPLES; i++) 
 	{
 		temperatureAverage += temperatureSample[i];
+		maxVal = max(temperatureSample[i],maxVal);
+		minVal = min(temperatureSample[i],minVal);
 	}
-	temperatureAverage /= NUM_SAMPLES;
+	temperatureAverage -= maxVal;
+	temperatureAverage -= minVal;
+	temperatureAverage /= NUM_SAMPLES - 2;
 	
 	return temperatureAverage;
 }
@@ -354,6 +362,9 @@ void TemperaturePT1000::begin()
 
 float TemperaturePT1000::PT1000(float pt1000Temperature)
 {
+	maxVal = 0;
+	minVal = 32767;
+	
 	for (uint8_t i = 0; i < NUM_SAMPLES; i++)
 	{
 		inputAnalog = analogRead(_analog_pin);
@@ -368,8 +379,12 @@ float TemperaturePT1000::PT1000(float pt1000Temperature)
 	for (uint8_t i = 0; i < NUM_SAMPLES; i++) 
 	{
 		temperatureAverage += temperatureSample[i];
+		maxVal = max(temperatureSample[i],maxVal);
+		minVal = min(temperatureSample[i],minVal);
 	}
-	temperatureAverage /= NUM_SAMPLES;
+	temperatureAverage -= maxVal;
+	temperatureAverage -= minVal;
+	temperatureAverage /= NUM_SAMPLES - 2;
 	
 	return temperatureAverage;
 }

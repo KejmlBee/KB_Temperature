@@ -4,7 +4,7 @@ Arduino library, for all architectures, to reading analog inputs and correct con
 
 Support thermocoupler PT1000 and NTC10K for max 12-bit ADC.<br>
 
-This function scan analog input, convert value to Celsius, get 5 samples and do averange value from this.<br>
+This function scan analog input, convert value to Celsius, get 10 samples and do averange value from this.<br>
 
 ## Example
 
