@@ -1,7 +1,7 @@
 #include "KB_Temperature.h"
 
 
-#define NUM_SAMPLES 5
+#define NUM_SAMPLES 10
 
 
 const float ADC_LUT[4096] PROGMEM =
@@ -288,7 +288,7 @@ int temperatureSample[NUM_SAMPLES];
 float temperatureAverage;
 
 
-TemperatureNTC10K::TemperatureNTC10K(uint8_t analog_pin, uint16_t NTC_RES, uint16_t EXT_RES, uint16_t BETA_COEF, float NOM_TEMP, uint16_t ADC_MAX, float IN_VOLTAGE)
+TemperatureNTC10K::TemperatureNTC10K(uint8_t analog_pin, uint16_t NTC_RES, uint16_t EXT_RES, uint16_t BETA_COEF, float NOM_TEMP, uint16_t ADC_MAX, float IN_VOLTAGE, float NTC10K_OFFSET)
 {
 	_analog_pin = analog_pin;
 	_NTC_RES = NTC_RES;
@@ -297,6 +297,7 @@ TemperatureNTC10K::TemperatureNTC10K(uint8_t analog_pin, uint16_t NTC_RES, uint1
 	_NOM_TEMP = NOM_TEMP;
 	_ADC_MAX = ADC_MAX;
 	_IN_VOLTAGE = IN_VOLTAGE;
+	_NTC10K_OFFSET = NTC10K_OFFSET;
 }
 
 
@@ -319,12 +320,13 @@ float TemperatureNTC10K::NTC10K(float ntc10kTemperature)
 		Rt = (_EXT_RES * voltageAnalog) / (_IN_VOLTAGE - voltageAnalog);
 		ntcTempKelvin = 1/(1/_NOM_TEMP + log(Rt/_NTC_RES)/_BETA_COEF);
 		ntc10kTemperature = ntcTempKelvin - 273.15;
+		ntc10kTemperature = ntc10kTemperature + _NTC10K_OFFSET;
 		
 		temperatureSample[i] = ntc10kTemperature;
 	}
 	
 	temperatureAverage = 0;
-	for (uint8_t i=0; i< NUM_SAMPLES; i++) 
+	for (uint8_t i = 0; i < NUM_SAMPLES; i++) 
 	{
 		temperatureAverage += temperatureSample[i];
 	}
@@ -363,7 +365,7 @@ float TemperaturePT1000::PT1000(float pt1000Temperature)
 	}
 	
 	temperatureAverage = 0;
-	for (uint8_t i=0; i< NUM_SAMPLES; i++) 
+	for (uint8_t i = 0; i < NUM_SAMPLES; i++) 
 	{
 		temperatureAverage += temperatureSample[i];
 	}

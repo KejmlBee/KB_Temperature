@@ -7,7 +7,7 @@ class TemperatureNTC10K
 {
 	public:
 	
-		TemperatureNTC10K(uint8_t analog_pin, uint16_t NTC_RES, uint16_t EXT_RES, uint16_t BETA_COEF, float NOM_TEMP, uint16_t ADC_MAX, float IN_VOLTAGE);
+		TemperatureNTC10K(uint8_t analog_pin, uint16_t NTC_RES, uint16_t EXT_RES, uint16_t BETA_COEF, float NOM_TEMP, uint16_t ADC_MAX, float IN_VOLTAGE, float NTC10K_OFFSET);
 		
 		void begin();
 		float NTC10K(float ntc10kTemperature);
@@ -21,6 +21,7 @@ class TemperatureNTC10K
 		float		_NOM_TEMP;
 		uint16_t	_ADC_MAX;
 		float		_IN_VOLTAGE;
+		float 		_NTC10K_OFFSET;
 		
 		float 		_ntc10kTemperature;	
 };

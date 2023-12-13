@@ -14,7 +14,7 @@ This function scan analog input, convert value to Celsius, get 5 samples and do 
 ```
 
 2. select which class need use
-	1. use NTC10K class and define (A, B, C, D, E, F, G)<br>
+	1. use NTC10K class and define (A, B, C, D, E, F, G, H)<br>
 A - input analog pin (example: 8)<br>
 B - resistance of NTC thermocoupler (example: 10000)<br>
 C - resistance of external resistor in circuit, real value with tolerance measured with voltmeter (example: 10157)<br>
@@ -22,6 +22,7 @@ D - beta coeficient, this parameter write you producer of thermocoupler (example
 E - nominal temperature in Kelvin, standard nominal is 25 degree in Celsius (example: 298.15)<br>
 F - count of values in analog-digital convert table for your device resolution, in esp32 is 12-bit = 4095, in other can be 10-bit = 1023 (example: 4095)<br>
 G - input power supply for NTC thermocoupler (example: 3.3)<br>
+H - value of error temperature difference (example: -5)<br>
 
 	2. use PT1000 class and define (A, B, C, D, E)<br>
 A - input analog pin (example: 5)<br>
@@ -32,7 +33,7 @@ E - input power supply for PT1000 thermocoupler (example: 3.3)<br>
 
 ```
 float tempXY_temperature;
-TemperatureNTC10K tempXY(8, 10000, 10157, 3950, 298.15, 4095, 3.3);
+TemperatureNTC10K tempXY(8, 10000, 10157, 3950, 298.15, 4095, 3.3, -5);
 
 float tempAB_temperature;
 TemperaturePT1000 tempAB(5, 1.88, -26, 4095, 3.3);

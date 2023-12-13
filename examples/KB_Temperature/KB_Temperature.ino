@@ -2,7 +2,7 @@
 
 
 float tempXY_temperature;
-TemperatureNTC10K tempXY(8, 10000, 11000, 3950, 298.15, 4095, 3.3);
+TemperatureNTC10K tempXY(8, 10000, 11000, 3950, 298.15, 4095, 3.3, -5);
 
 float tempAB_temperature;
 TemperaturePT1000 tempAB(5, 1.88, -26, 4095, 3.3);
