@@ -9,7 +9,7 @@ This function scan analog input, convert value to Celsius, get 10 samples and do
 ## Example
 
 1. include library
-```
+```c++
 #include <KB_Temperature.h>
 ```
 
@@ -31,7 +31,7 @@ C - value of error temperature difference (example: -26)<br>
 D - count of values in analog-digital convert table for your device resolution, in esp32 is 12-bit = 4095, in other can be 10-bit = 1023 (example: 4095)<br>
 E - input power supply for PT1000 thermocoupler (example: 3.3)<br>
 
-```
+```c++
 float tempXY_temperature;
 TemperatureNTC10K tempXY(8, 10000, 10157, 3950, 298.15, 4095, 3.3, -5);
 
@@ -40,7 +40,7 @@ TemperaturePT1000 tempAB(5, 1.88, -26, 4095, 3.3);
 ```
 
 2. include begin() function in setup()
-```
+```c++
 void setup()
 {
 	tempXY.begin();
@@ -50,7 +50,7 @@ void setup()
 ```
 
 3. use library function
-```
+```c++
 void loop()
 {
 	tempXY.NTC10K(tempXY_temperature);
